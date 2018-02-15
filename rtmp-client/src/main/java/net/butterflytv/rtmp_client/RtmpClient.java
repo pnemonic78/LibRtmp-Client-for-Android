@@ -1,5 +1,7 @@
 package net.butterflytv.rtmp_client;
 
+import net.butterflytv.rtmp.RtmpOpenException;
+
 import java.io.IOException;
 
 /**
@@ -15,35 +17,10 @@ public class RtmpClient {
     private final static int OPEN_SUCCESS = 1;
     private long rtmpPointer = 0;
 
-    public static class RtmpIOException extends IOException {
-
-        /**
-         * it means there is a problem in memory allocation
-         */
-        public final static int OPEN_ALLOC = -1;
-
-        /**
-         * it means there is a problem in setting url, check the rtmp url
-         */
-        public final static int OPEN_SETUP_URL = -2;
-
-        /**
-         *  it means there is a problem in connecting to the rtmp server,
-         *  check there is an active network connection,
-         *  check rtmp server is running,
-         */
-        public final static int OPEN_CONNECT = -3;
-
-        /**
-         *  it means there is a problem in connecting stream
-         */
-        public final static int OPEN_CONNECT_STREAM = -4;
-
-
-        public final int errorCode;
+    public static class RtmpIOException extends RtmpOpenException {
 
         public RtmpIOException(int errorCode) {
-            this.errorCode = errorCode;
+            super(errorCode);
         }
 
     }

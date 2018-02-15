@@ -91,6 +91,15 @@ JNIEXPORT jint JNICALL Java_net_butterflytv_rtmp_1client_RTMPMuxer_read
 JNIEXPORT jboolean JNICALL Java_net_butterflytv_rtmp_1client_RTMPMuxer_isConnected
   (JNIEnv* env, jobject thiz);
 
+JNIEXPORT jlong JNICALL Java_net_butterflytv_rtmp_server_RtmpServer_nativeAlloc
+        (JNIEnv* env, jobject thiz);
+
+JNIEXPORT jboolean JNICALL Java_net_butterflytv_rtmp_server_RtmpServer_nativeIsConnected
+        (JNIEnv* env, jobject thiz, jlong rtmpPointer);
+
+JNIEXPORT void JNICALL Java_net_butterflytv_rtmp_server_RtmpServer_nativeClose
+        (JNIEnv* env, jobject thiz, jlong rtmpPointer);
+
 #ifdef __cplusplus
 }
 #endif
