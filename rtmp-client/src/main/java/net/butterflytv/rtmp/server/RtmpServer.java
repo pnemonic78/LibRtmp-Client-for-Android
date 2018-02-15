@@ -15,7 +15,7 @@ public class RtmpServer {
 
     private long rtmpPointer = 0;
 
-    public void open(String url, boolean isPublishMode) throws RtmpOpenException {
+    public void open() throws RtmpOpenException {
         rtmpPointer = nativeAlloc();
         //TODO implement me!
     }
@@ -23,9 +23,9 @@ public class RtmpServer {
     private native long nativeAlloc();
 
     /**
+     * Is the server connected?
      *
-     * @return true if it is connected
-     * false if it is not connected
+     * @return {@code true} if connected.
      */
     public boolean isConnected() {
         return nativeIsConnected(rtmpPointer);
@@ -34,8 +34,7 @@ public class RtmpServer {
     private native boolean nativeIsConnected(long rtmpPointer);
 
     /**
-     *
-     * closes the connection. Dont forget to call
+     * Close the connection. Don't forget to call when finished!
      */
     public void close() {
         nativeClose(rtmpPointer);
