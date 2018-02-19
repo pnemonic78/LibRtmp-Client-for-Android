@@ -27,15 +27,16 @@ public class RtmpServerService {
      * @param port the port to listen for incoming client connections.
      * @throws IOException if an I/O error occurs.
      */
-    public void start(int port) throws IOException {
+    public RtmpServerThread start(int port) throws IOException {
         if (serverThread != null) {
             throw new ConnectException("RTMP service already started!");
         }
         serverThread = new RtmpServerThread(port);
         serverThread.start();
+        return serverThread;
     }
 
-    public boolean isStarted() {
+    public boolean isRunning() {
         return (serverThread != null) && serverThread.isRunning();
     }
 

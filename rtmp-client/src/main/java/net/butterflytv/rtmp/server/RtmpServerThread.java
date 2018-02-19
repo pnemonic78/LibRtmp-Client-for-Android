@@ -2,9 +2,13 @@ package net.butterflytv.rtmp.server;
 
 import net.butterflytv.rtmp.RtmpOpenException;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.net.ServerSocketFactory;
 
@@ -15,9 +19,11 @@ public class RtmpServerThread extends Thread {
 
     private static final String TAG = "RtmpServerThread";
 
-    private ServerSocket serverSocket;
+    private final ServerSocket serverSocket;
+    private final List<RtmpServerSession> sessions = new ArrayList<>();
 
     public RtmpServerThread(int port) throws RtmpOpenException {
+        setName(TAG);
         try {
             serverSocket = ServerSocketFactory.getDefault().createServerSocket(port);
         } catch (IOException e) {
@@ -27,17 +33,17 @@ public class RtmpServerThread extends Thread {
 
     @Override
     public void run() {
-//        Socket clientSocket;
-//
-//        while (isRunning()) {
-//            try {
-//                clientSocket = serverSocket.accept();
-//            } catch (IOException e) {
-//                Log.e(TAG, "Error accepting client: " + e.getLocalizedMessage(), e);
-//                continue;
-//            }
-//            serve(clientSocket);
-//        }
+        Socket clientSocket;
+
+        while (isRunning()) {
+            try {
+                clientSocket = serverSocket.accept();
+            } catch (IOException e) {
+                Log.e(TAG, "Error accepting RTMP client: " + e.getLocalizedMessage(), e);
+                continue;
+            }
+            serve(clientSocket);
+        }
     }
 
     protected boolean isRunning() {
@@ -45,7 +51,9 @@ public class RtmpServerThread extends Thread {
     }
 
     protected void serve(Socket socket) {
-
+        RtmpServerSession session = new RtmpServerSession(socket);
+        session.start();
+        sessions.add(session);
     }
 
     public void cancel() {
@@ -55,6 +63,12 @@ public class RtmpServerThread extends Thread {
             } catch (IOException ignore) {
             }
         }
+
+        for (RtmpServerSession session : sessions) {
+            session.close();
+        }
+        sessions.clear();
+
         interrupt();
     }
 
