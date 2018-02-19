@@ -5,6 +5,7 @@ import net.butterflytv.rtmp.RtmpOpenException;
 import android.util.Log;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -33,17 +34,23 @@ public class RtmpServerThread extends Thread {
 
     @Override
     public void run() {
+        Log.d(TAG, "run enter " + this);
         Socket clientSocket;
 
         while (isRunning()) {
             try {
                 clientSocket = serverSocket.accept();
+            } catch (InterruptedIOException ie) {
+                // thread cancelled?
+                break;
             } catch (IOException e) {
                 Log.e(TAG, "Error accepting RTMP client: " + e.getLocalizedMessage(), e);
                 continue;
             }
             serve(clientSocket);
+            cleanSessions();
         }
+        Log.d(TAG, "run leave " + this);
     }
 
     protected boolean isRunning() {
@@ -51,12 +58,15 @@ public class RtmpServerThread extends Thread {
     }
 
     protected void serve(Socket socket) {
+        Log.d(TAG, "serve enter " + this + " " + socket);
         RtmpServerSession session = new RtmpServerSession(socket);
         session.start();
         sessions.add(session);
+        Log.d(TAG, "serve leave " + this + " " + socket);
     }
 
     public void cancel() {
+        Log.d(TAG, "cancel enter " + this);
         if (serverSocket != null) {
             try {
                 serverSocket.close();
@@ -70,9 +80,15 @@ public class RtmpServerThread extends Thread {
         sessions.clear();
 
         interrupt();
+        Log.d(TAG, "cancel leave " + this);
     }
 
     public int getPort() {
         return serverSocket.getLocalPort();
+    }
+
+    /** Remove closed sessions. */
+    protected void cleanSessions() {
+        //TODO implement me!
     }
 }
