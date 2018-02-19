@@ -7,6 +7,10 @@ import net.butterflytv.rtmp.RtmpOpenException;
  */
 public class RtmpServer {
 
+    private static final String TAG = "RtmpServer";
+
+    public static final int DEFAULT_PORT = 1935;
+
     static {
         System.loadLibrary("rtmp-jni");
     }
