@@ -15,12 +15,18 @@ public class RtmpServer {
 
     private long rtmpPointer = 0;
 
-    public void open() throws RtmpOpenException {
+    public void open(String url) throws RtmpOpenException {
         rtmpPointer = nativeAlloc();
-        //TODO implement me!
+        int result = nativeOpen(url, rtmpPointer);
+        if (result != OPEN_SUCCESS) {
+            rtmpPointer = 0;
+            throw new RtmpOpenException(result);
+        }
     }
 
     private native long nativeAlloc();
+
+    private native int nativeOpen(String url, long rtmpPointer);
 
     /**
      * Is the server connected?

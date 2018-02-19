@@ -754,8 +754,9 @@ int RTMP_SetupURL(RTMP *r, char *url)
 {
   AVal opt, arg;
   char *p1, *p2, *ptr = strchr(url, ' ');
-  int ret, len;
-  unsigned int port = 0;
+  int ret;
+  size_t len;
+  unsigned short port = 0;
 
   if (ptr)
     *ptr = '\0';

@@ -36,14 +36,15 @@ Java_net_butterflytv_rtmp_1client_RtmpClient_nativeOpen(JNIEnv* env, jobject thi
     RTMP *rtmp = (RTMP *) rtmpPointer;
    // rtmp = RTMP_Alloc();
     if (rtmp == NULL) {
+        (*env)->ReleaseStringUTFChars(env, url_, url);
         return -1;
     }
 
     RTMP_Init(rtmp);
     int ret = RTMP_SetupURL(rtmp, url);
-
     if (!ret) {
         RTMP_Free(rtmp);
+        (*env)->ReleaseStringUTFChars(env, url_, url);
         return -2;
     }
     if (isPublishMode) {
@@ -53,13 +54,16 @@ Java_net_butterflytv_rtmp_1client_RtmpClient_nativeOpen(JNIEnv* env, jobject thi
     ret = RTMP_Connect(rtmp, NULL);
     if (!ret) {
         RTMP_Free(rtmp);
+        (*env)->ReleaseStringUTFChars(env, url_, url);
         return -3;
     }
-    ret = RTMP_ConnectStream(rtmp, 0);
 
+    ret = RTMP_ConnectStream(rtmp, 0);
     if (!ret) {
+        (*env)->ReleaseStringUTFChars(env, url_, url);
         return -4;
     }
+
     (*env)->ReleaseStringUTFChars(env, url_, url);
     return 1;
 }
@@ -183,6 +187,41 @@ JNIEXPORT jlong JNICALL Java_net_butterflytv_rtmp_server_RtmpServer_nativeAlloc
         return -1;
     }
     return (jlong) rtmp;
+}
+
+JNIEXPORT jint JNICALL
+Java_net_butterflytv_rtmp_server_RtmpServer_nativeOpen(JNIEnv *env, jobject thiz,
+                                                       jstring url, jlong rtmpPointer) {
+    const char *curl = (*env)->GetStringUTFChars(env, url, NULL);
+
+    RTMP* rtmp = (RTMP*) rtmpPointer;
+    if (rtmp == NULL) {
+        (*env)->ReleaseStringUTFChars(env, url, curl);
+        return -1;
+    }
+
+    RTMP_Init(rtmp);
+    int ret = RTMP_SetupURL(rtmp, url);
+    if (!ret) {
+        RTMP_Free(rtmp);
+        (*env)->ReleaseStringUTFChars(env, url, curl);
+        return -2;
+    }
+
+    ret = RTMP_Serve(rtmp);
+    if (!ret) {
+        RTMP_Free(rtmp);
+        (*env)->ReleaseStringUTFChars(env, url, curl);
+        return -3;
+    }
+
+    ret = RTMP_ConnectStream(rtmp, 0);
+    if (!ret) {
+        (*env)->ReleaseStringUTFChars(env, url, curl);
+        return -4;
+    }
+
+    return 1;
 }
 
 JNIEXPORT jboolean JNICALL Java_net_butterflytv_rtmp_server_RtmpServer_nativeIsConnected
