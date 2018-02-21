@@ -25,32 +25,30 @@ public class RtmpServerSession extends Thread {
 
     @Override
     public void run() {
-        Log.d(TAG, "run enter " + this);
+        Log.d(TAG, "run enter " + this + " socket=" + socket);
         process();
         close();
-        Log.d(TAG, "run leave " + this);
+        Log.d(TAG, "run leave " + this + " socket=" + socket);
     }
 
     /**
      * Process the client request.
      */
     public void process() {
-        Log.d(TAG, "process enter " + this);
-        //TODO read the client URL from the socket.
-        String url = "";
+        Log.d(TAG, "process enter " + this + " socket=" + socket);
         try {
-            server.open(url);
+            server.open(socket);
         } catch (RtmpOpenException e) {
-            Log.e(TAG, "Error opening RTMP server:" + e.getLocalizedMessage(), e);
+            Log.e(TAG, "Error opening RTMP server: " + e.getErrorCode(), e);
         }
-        Log.d(TAG, "process leave " + this);
+        Log.d(TAG, "process leave " + this + " socket=" + socket);
     }
 
     /**
      * Close the session.
      */
     public void close() {
-        Log.d(TAG, "close enter " + this);
+        Log.d(TAG, "close enter " + this + " socket=" + socket);
         if (server != null) {
             server.close();
             server = null;
@@ -58,7 +56,7 @@ public class RtmpServerSession extends Thread {
         try {
             socket.close();
         } catch (IOException e) {
-            Log.e(TAG, "Error closing RTMP socket:" + e.getLocalizedMessage(), e);
+            Log.e(TAG, "Error closing RTMP socket: " + e.getLocalizedMessage(), e);
         }
         interrupt();
         Log.d(TAG, "close leave " + this);

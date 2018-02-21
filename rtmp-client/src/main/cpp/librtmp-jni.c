@@ -191,33 +191,23 @@ JNIEXPORT jlong JNICALL Java_net_butterflytv_rtmp_server_RtmpServer_nativeAlloc
 
 JNIEXPORT jint JNICALL
 Java_net_butterflytv_rtmp_server_RtmpServer_nativeOpen(JNIEnv *env, jobject thiz,
-                                                       jstring url, jlong rtmpPointer) {
-    const char *curl = (*env)->GetStringUTFChars(env, url, NULL);
-
+                                                       jint socketDescriptor, jlong rtmpPointer) {
     RTMP* rtmp = (RTMP*) rtmpPointer;
     if (rtmp == NULL) {
-        (*env)->ReleaseStringUTFChars(env, url, curl);
         return -1;
     }
 
     RTMP_Init(rtmp);
-    int ret = RTMP_SetupURL(rtmp, url);
-    if (!ret) {
-        RTMP_Free(rtmp);
-        (*env)->ReleaseStringUTFChars(env, url, curl);
-        return -2;
-    }
+    rtmp->m_sb.sb_socket = socketDescriptor;
 
-    ret = RTMP_Serve(rtmp);
+    int ret = RTMP_Serve(rtmp);
     if (!ret) {
         RTMP_Free(rtmp);
-        (*env)->ReleaseStringUTFChars(env, url, curl);
         return -3;
     }
 
     ret = RTMP_ConnectStream(rtmp, 0);
     if (!ret) {
-        (*env)->ReleaseStringUTFChars(env, url, curl);
         return -4;
     }
 

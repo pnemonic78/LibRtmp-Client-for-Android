@@ -103,7 +103,7 @@ JNIEXPORT jlong JNICALL Java_net_butterflytv_rtmp_server_RtmpServer_nativeAlloc
         (JNIEnv* env, jobject thiz);
 
 JNIEXPORT jint JNICALL Java_net_butterflytv_rtmp_server_RtmpServer_nativeOpen
-        (JNIEnv *env, jobject thiz, jstring url, jlong rtmpPointer);
+        (JNIEnv *env, jobject thiz, jint socketDescriptor, jlong rtmpPointer);
 
 JNIEXPORT jboolean JNICALL Java_net_butterflytv_rtmp_server_RtmpServer_nativeIsConnected
         (JNIEnv* env, jobject thiz, jlong rtmpPointer);

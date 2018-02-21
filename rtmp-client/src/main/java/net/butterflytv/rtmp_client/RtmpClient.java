@@ -2,12 +2,16 @@ package net.butterflytv.rtmp_client;
 
 import net.butterflytv.rtmp.RtmpOpenException;
 
+import android.util.Log;
+
 import java.io.IOException;
 
 /**
  * Created by faraklit on 01.01.2016.
  */
 public class RtmpClient {
+
+    private static final String TAG = "RtmpClient";
 
     static {
         System.loadLibrary("rtmp-jni");
@@ -26,12 +30,14 @@ public class RtmpClient {
     }
 
     public void open(String url, boolean isPublishMode) throws RtmpIOException {
+        Log.d(TAG, "open enter " + this + " url=" + url);
         rtmpPointer = nativeAlloc();
         int result = nativeOpen(url, isPublishMode, rtmpPointer);
         if (result != OPEN_SUCCESS) {
             rtmpPointer = 0;
             throw new RtmpIOException(result);
         }
+        Log.d(TAG, "open enter " + this + " url=" + url);
     }
 
     private native long nativeAlloc();
@@ -130,8 +136,10 @@ public class RtmpClient {
      * closes the connection. Dont forget to call
      */
     public void close() {
+        Log.d(TAG, "close enter " + this);
         nativeClose(rtmpPointer);
         rtmpPointer = 0;
+        Log.d(TAG, "close leave " + this);
     }
 
     private native void nativeClose(long rtmpPointer);

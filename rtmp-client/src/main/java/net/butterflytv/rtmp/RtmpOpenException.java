@@ -35,4 +35,7 @@ public class RtmpOpenException extends IOException {
         this.errorCode = errorCode;
     }
 
+    public int getErrorCode() {
+        return errorCode;
+    }
 }

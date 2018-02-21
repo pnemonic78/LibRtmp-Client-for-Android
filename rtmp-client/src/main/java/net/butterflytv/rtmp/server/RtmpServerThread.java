@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +41,13 @@ public class RtmpServerThread extends Thread {
         while (isRunning()) {
             try {
                 clientSocket = serverSocket.accept();
+            } catch (SocketException se) {
+                if ("Socket closed".equals(se.getMessage())) {
+                    // thread cancelled?
+                    break;
+                }
+                Log.e(TAG, "Error accepting RTMP client: " + se.getLocalizedMessage(), se);
+                continue;
             } catch (InterruptedIOException ie) {
                 // thread cancelled?
                 break;
